@@ -1,0 +1,9 @@
+node_modules
+dist
+pnpm-lock.yaml
+*/pnpm-lock.yaml
+.env
+.env.local
+.env.development.local
+
+bun.lockb

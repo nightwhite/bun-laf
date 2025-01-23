@@ -1,0 +1,73 @@
+{
+  "name": "s-web23",
+  "version": "0.0.42",
+  "description": "simple backend framework",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "web",
+    "backend",
+    "framework",
+    "express"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "HUAHUA",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/dev.ts",
+    "start": "node dist/dev.js",
+    "clean": "rimraf dist",
+    "build:clean": "pnpm clean && pnpm build",
+    "prepublishOnly": "pnpm build",
+    "prebuild": "pnpm clean"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/express-xml-bodyparser": "^0.3.5",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/lodash": "^4.17.12",
+    "@types/multer": "^1.4.12",
+    "@types/ws": "^8.5.12",
+    "eslint": "^9.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-plugin-import": "^2.31.0",
+    "globals": "^15.11.0",
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
+    "tslib": "^2.8.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.11.0"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "chalk": "^4.1.2",
+    "cors": "^2.8.5",
+    "database-proxy": "^1.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-xml-bodyparser": "^0.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "mongodb": "^5.9.2",
+    "multer": "1.4.5-lts.1",
+    "ws": "^8.18.0"
+  },
+  "packageManager": "pnpm@9.12.3",
+  "engines": {
+    "node": ">=22.9.0",
+    "pnpm": ">=9.12.2"
+  }
+}
