@@ -1,25 +1,6 @@
-# 简单 WEB 后端框架
+# Bun-Laf 框架
 
-仓库地址：[simple-web](https://github.com/HUAHUAI23/simple-web)
-
-一个轻量级的 **函数编程式 Web 服务框架**，支持 **函数式** 编写后端接口，内置 WebSocket、XML 解析、CORS 等特性，方便 **小程序，函数计算，腾讯云开发用户** 快速进行后端服务开发。方便集成到各种公有云平台，容器平台，进行各种 **插件式开发，敏捷开发**。
-
-- [sealos 操作系统 公有云环境](https://gzg.sealos.run)
-- [sealos devbox 快速开发](https://gzg.sealos.run/?openapp=system-devbox)
-- [sealos 云开发](https://gzg.sealos.run/?openapp=system-sealaf)
-
-## 🌟 核心特性
-
-- **零配置开发** - 快速启动项目，无需繁琐配置
-- **自动路由生成** - 基于文件系统的路由组织方式
-- **函数式编程** - 直观的接口编写方式
-- **丰富的内置功能**
-  - WebSocket 支持
-  - XML 解析能力
-  - CORS 配置
-  - 函数缓存
-  - 可配置日志级别
-  - Express.js 扩展能力
+基于 [simple-web](https://github.com/HUAHUAI23/simple-web) 修改而来
 
 ## 🚀 快速开始
 
@@ -27,8 +8,7 @@
 
 ### 环境要求
 
-- Node.js >= 22.0.0
-- pnpm（推荐的包管理工具）
+- Bun
 
 ### 安装
 
@@ -36,17 +16,16 @@
 
 ```json
 {
-  "name": "simple-web",
+  "name": "bun-laf",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --exec tsx watch index.ts",
+    "dev": "bun run index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "bun run dist/index.js",
     "clean": "rimraf dist",
     "build:clean": "pnpm clean && pnpm build",
     "typecheck": "tsc --noEmit",
@@ -54,18 +33,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^22.8.1",
-    "nodemon": "^3.1.7",
-    "rimraf": "^6.0.1",
-    "tslib": "^2.8.0",
-    "tsx": "^4.19.1",
-    "typescript": "^5.6.3"
-  },
-  "dependencies": {
-    "simple-web23": "^0.0.25"
-  }
+  "license": "ISC"
 }
 ```
 
@@ -103,32 +71,7 @@ tsconfig.json:
 }
 ```
 
-`nodemon.json`:
-
-```json
-{
-    "watch": [
-        "functions/",
-        ".env"
-    ],
-    "ignore": [
-        "*.test.js",
-        "*.spec.js",
-        "*.test.ts",
-        "*.spec.ts",
-        "node_modules/",
-        "dist"
-    ],
-    "ext": "ts,js,json,yaml,yml",
-    "exec": "tsx watch index.ts",
-    "delay": "1000",
-    "env": {
-        "NODE_ENV": "development"
-    }
-}
-```
-
-下面的示例，项目根目录均为 `demo` 在项目根目录下添加上面三个文件 package.json 、tsconfig.json 和 nodemon.json，然后执行 `pnpm install simple-web` 安装依赖, 如果没有安装 pnpm 请先安装 pnpm，`npm install -g pnpm`
+下面的示例，项目根目录均为 `demo` 在项目根目录下添加上面三个文件 package.json 、tsconfig.json 和 nodemon.json，然后执行 `bun install bun-laf` 安装依赖
 
 项目结构示例
 
@@ -137,26 +80,25 @@ demo
 ├── index.ts
 ├── package.json
 ├── tsconfig.json
-├── nodemon.json
 ```
 
 ### 使用
 
-下面给出入口文件为 `index.ts` ，在 `index.ts` 中引入 SimpleWeb 并启动服务的示例。
+下面给出入口文件为 `index.ts` ，在 `index.ts` 中引入 BunLafServer 并启动服务的示例。
 
 `demo/index.ts`
 
 ```typescript
-import { SimpleWeb, SimpleWebConfig } from 'simple-web23'
+import { BunLafServer, BunLafServerConfig } from 'bun-laf'
 
-const config: SimpleWebConfig = {
+const config: BunLafServerConfig = {
     port: 3000,
     logLevel: 'debug',
     isProd: process.env.NODE_ENV === 'production',
     requestLimitSize: '100mb'
 }
 
-const app = new SimpleWeb(config)
+const app = new BunLafServer(config)
 app.start()
 ```
 
@@ -173,7 +115,7 @@ simple web 框架的路由组织方式为文件系统组织方式，例如 `func
 `functions/hello.ts`
 
 ```typescript
-import type { FunctionContext } from 'simple-web23'
+import type { FunctionContext } from 'bun-laf'
 
 export default async function (ctx: FunctionContext) {
     return {
@@ -262,7 +204,7 @@ simple web 框架使用 mongo 数据库，s3 对象存储，请看 [跳到更多
 #### 使用示例 FunctionContext 示例
 
 ```typescript
-import type { FunctionContext } from 'simple-web23'
+import type { FunctionContext } from 'bun-laf'
 
 export default async function (ctx: FunctionContext) {
     // 获取查询参数
@@ -288,7 +230,7 @@ export default async function (ctx: FunctionContext) {
 如果需要更细粒度的控制响应，可以直接使用 `ctx.response` 对象：
 
 ```typescript
-import type { FunctionContext } from 'simple-web23'
+import type { FunctionContext } from 'bun-laf'
 
 export default async function (ctx: FunctionContext) {
     // 使用原始 response 对象设置状态码和发送响应
@@ -337,7 +279,7 @@ export interface FunctionModuleGlobalContext {
 ```
 
 ```typescript
-import type { FunctionModuleGlobalContext } from 'simple-web23'
+import type { FunctionModuleGlobalContext } from 'bun-laf'
 ```
 
 接口函数的全局上下文可以通过 `global` 对象访问，例如 `global.__filename` 可以获取当前接口函数文件路径
@@ -347,11 +289,11 @@ import type { FunctionModuleGlobalContext } from 'simple-web23'
 ### 配置项
 
 ```typescript
-import type { SimpleWebConfig } from 'simple-web23'
-import { Config } from 'simple-web23'
+import type { BunLafServerConfig } from 'bun-laf'
+import { Config } from 'bun-laf'
 ```
 
-SimpleWeb 框架支持以下配置选项：
+BunLafServer 框架支持以下配置选项：
 
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|---------|------|
@@ -367,16 +309,16 @@ SimpleWeb 框架支持以下配置选项：
 #### 使用配置项示例
 
 ```typescript
-import { SimpleWeb, SimpleWebConfig } from 'simple-web23'
+import { BunLafServer, BunLafServerConfig } from 'bun-laf'
 
-const config: SimpleWebConfig = {
+const config: BunLafServerConfig = {
     port: 3000,
     logLevel: 'debug',
     isProd: process.env.NODE_ENV === 'production',
     requestLimitSize: '100mb'
 }
 
-const app = new SimpleWeb(config)
+const app = new BunLafServer(config)
 app.start()
 ```
 
@@ -385,13 +327,13 @@ app.start()
 simple web 框架提供 `FunctionCache` `FunctionModule` `FunctionExecutor` 三个工具函数
 
 ```typescript
-import { FunctionCache, FunctionModule, FunctionExecutor } from 'simple-web23'
+import { FunctionCache, FunctionModule, FunctionExecutor } from 'bun-laf'
 ```
 
 使用 `FunctionCache` 可以获取当前所有的接口函数的原始代码缓存
 
 ```typescript
-import type { FunctionContext } from 'simple-web23'
+import type { FunctionContext } from 'bun-laf'
 export default async function (ctx: FunctionContext) {
     const cache = FunctionCache.getAll()
     console.log(cache)
@@ -401,7 +343,7 @@ export default async function (ctx: FunctionContext) {
 使用 `FunctionModule` 可以获取当前所有的接口函数模块
 
 ```typescript
-import type { FunctionContext } from 'simple-web23'
+import type { FunctionContext } from 'bun-laf'
 export default async function (ctx: FunctionContext) {
     const modules = FunctionModule.getCache()
     console.log(modules)
@@ -413,6 +355,23 @@ export default async function (ctx: FunctionContext) {
 大部分 web 开发中都需要用到 **数据库** **对象存储** 这些东西, 下面给出使用 mongo 数据库 和 S3 对象存储的示例。
 
 simple web 框架支持在接口函数目录外写一些 持久化的 client，例如 数据库 client，s3 对象存储 client 等和一些 corn job 等，推荐将这些 client 和 cron job 写在接口函数目录外。
+
+### Docker 启动单例副本 mongo 数据库
+
+```shell
+docker run -d --name mongo-instance -p 27017:27017 \
+  mongo:5.0.7 --replSet rs0 --noauth
+
+docker exec -it mongo-instance mongo
+
+rs.initiate({
+  _id: "rs0",
+  members: [
+    { _id: 0, host: "localhost:27017" }
+  ]
+});
+
+```
 
 ### 使用 mongo 数据库
 
@@ -436,7 +395,7 @@ export const client = new MongoClient(uri)
 在 `functions` 目录下创建 `mongo-test.ts` 文件，写入 mongodb 测试代码。
 
 ```typescript
-import { FunctionContext } from 'simple-web23'
+import { FunctionContext } from 'bun-laf'
 import { client } from '../client/mongo'
 
 export default async function (ctx: FunctionContext) {
@@ -568,7 +527,7 @@ export { listFiles, uploadFile }
 在 `functions` 目录下创建 `s3-test.ts` 文件，写入 s3 测试代码。
 
 ```typescript
-import { FunctionContext } from 'simple-web23'
+import { FunctionContext } from 'bun-laf'
 import { listFiles, uploadFile } from '../client/s3'
 
 

@@ -31,6 +31,7 @@ declare global {
     __function_name?: string
     requestId?: string
     url?: string
+    user?: any
   }
 }
 

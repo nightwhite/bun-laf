@@ -146,7 +146,7 @@ export class FunctionModule {
     } catch (error) {
       console.log('####', currentFileName, moduleName, error)
       if (filename === '') {
-        throw new Error(`#### Failed1111111 to require module ${currentFileName}: ${error}`)
+        throw new Error(`#### Failed to require module ${currentFileName}: ${error}`)
       } else {
         throw new Error(`#### ${currentFileName} Failed to require module ${moduleName}: ${error}`)
       }
@@ -296,10 +296,9 @@ export class FunctionModule {
       exports: {},
     }
 
-    const fConsole = consoleInstance || new Console(functionName, Config)
+    const fConsole = consoleInstance || new Console(functionName, new Config())
     const __from_modules = [...fromModules]
 
-    // TODO: 添加一些 utils，比如清楚缓存，重刷缓存
     const sandbox: Context & FunctionModuleGlobalContext = {
       __filename: functionName,
       module: _module,

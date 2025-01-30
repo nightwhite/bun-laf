@@ -3,8 +3,6 @@ import type { Db } from 'database-proxy'
 import type * as mongodb from 'mongodb'
 import type { WebSocket } from 'ws'
 
-import type { FunctionContext } from '../types/functions'
-
 export type InvokeFunctionType = (name: string, param?: FunctionContext) => Promise<any>
 export type GetTokenFunctionType = (payload: any, secret?: string) => string
 export type ParseTokenFunctionType = (token: string, secret?: string) => any | null
@@ -86,14 +84,4 @@ export interface CloudSdkInterface {
    * Websocket connection list
    */
   sockets: Set<WebSocket>
-
-  /**
-   * Current app id
-   */
-  appid: string
-
-  /**
-   * @deprecated this is deprecated and will be removed in future, use `process.env` instead
-   */
-  env: any
 }

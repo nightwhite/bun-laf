@@ -1,7 +1,6 @@
 import type { AxiosStatic } from 'axios'
 import request from 'axios'
 import { getDb, type Db } from 'database-proxy'
-import type { WebSocket } from 'ws'
 
 import { DatabaseAgent } from '../db/db'
 import { getToken, parseToken } from '../utils/common'
@@ -13,6 +12,7 @@ import type {
   MongoDriverObject,
   ParseTokenFunctionType,
 } from './cloud.interface'
+import { FunctionModule } from 'src/engine/module/FunctionModule'
 
 export class Cloud implements CloudSdkInterface {
   /**
@@ -24,6 +24,10 @@ export class Cloud implements CloudSdkInterface {
   private _cloud: CloudSdkInterface | undefined
 
   private get cloud(): CloudSdkInterface {
+    if (createCloudSdk && !Cloud.create) {
+      Cloud.create = createCloudSdk
+    }
+
     if (!this._cloud) {
       this._cloud = Cloud.create()
     }
@@ -41,10 +45,6 @@ export class Cloud implements CloudSdkInterface {
     return getDb(DatabaseAgent.accessor)
   }
 
-  /**
-   * Invoke cloud function
-   * @deprecated Just import the cloud function directly, and then call it
-   */
   invoke: InvokeFunctionType = (name: string, param?: any) => {
     return this.cloud.invoke(name, param)
   }
@@ -64,19 +64,46 @@ export class Cloud implements CloudSdkInterface {
   get mongo(): MongoDriverObject {
     return this.cloud.mongo
   }
+}
 
-  get sockets(): Set<WebSocket> {
-    return this.cloud.sockets
+const _shared_preference = new Map<string, any>()
+
+export function createCloudSdk() {
+  const cloud: CloudSdkInterface = {
+    database: () => getDb(DatabaseAgent.accessor),
+    shared: _shared_preference,
+    getToken: getToken,
+    parseToken: parseToken,
+    mongo: {
+      client: DatabaseAgent.client as any,
+      db: DatabaseAgent.db as any,
+    },
+    invoke: invokeInFunction,
+  }
+  return cloud
+}
+
+/**
+ * The cloud function is invoked in the cloud function, which runs in the cloud function.
+ *
+ * @param name the name of cloud function to be invoked
+ * @ctx ctx the invoke params
+ * @returns
+ */
+async function invokeInFunction(name: string, ctx?: FunctionContext) {
+  const mod = FunctionModule.get(name)
+  const func = (mod?.default || mod?.main) as (ctx: FunctionContext) => Promise<any>
+
+  if (!func) {
+    throw new Error(`invoke() failed to get function: ${name}`)
   }
 
-  get appid(): string {
-    return this.cloud.appid
-  }
+  ctx = ctx ?? {}
+  ctx.__function_name = name
 
-  /**
-   * @deprecated this is deprecated and will be removed in future, use `process.env` instead
-   */
-  get env() {
-    return this.cloud.env
-  }
+  ctx.requestId = ctx.requestId ?? 'invoke'
+
+  ctx.method = ctx.method ?? 'call'
+
+  return await func(ctx)
 }

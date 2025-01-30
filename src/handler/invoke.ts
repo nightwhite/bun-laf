@@ -41,6 +41,7 @@ async function invokeFunction(ctx: FunctionContext, useInterceptor: boolean): Pr
   ctx.user = ctx.request?.user
 
   let func = FunctionCache.get(name!)
+
   if (!func) {
     func = FunctionCache.get(DEFAULT_FUNCTION_NAME)
     if (!func) {
@@ -49,7 +50,7 @@ async function invokeFunction(ctx: FunctionContext, useInterceptor: boolean): Pr
     }
   }
 
-  const logger = new Console(func.name, Config)
+  const logger = new Console(func.name, new Config())
   try {
     // execute the func
     const executor = new FunctionExecutor(func)

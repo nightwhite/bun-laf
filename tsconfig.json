@@ -29,11 +29,11 @@
   },
   "include": [
     "src/**/*",
-    "src/dev.ts",
-    "functions/**/*"
+    "src/dev.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "functions"
   ]
 }

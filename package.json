@@ -1,14 +1,15 @@
 {
-  "name": "s-web23",
-  "version": "0.0.42",
-  "description": "simple backend framework",
+  "name": "bun-laf",
+  "version": "0.0.17",
+  "description": "Bun-laf backend framework",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "package.json"
   ],
   "keywords": [
     "web",
@@ -19,19 +20,21 @@
   "publishConfig": {
     "access": "public"
   },
-  "author": "HUAHUA",
+  "author": "NightWhite",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "dev": "tsx watch src/dev.ts",
-    "start": "node dist/dev.js",
+    "dev": "bun run src/dev.ts --NODE_ENV development",
+    "start": "bun run dist/dev.js",
     "clean": "rimraf dist",
-    "build:clean": "pnpm clean && pnpm build",
-    "prepublishOnly": "pnpm build",
-    "prebuild": "pnpm clean"
+    "build:clean": "bun clean && bun build src/dev.ts --target bun --outdir ./dist",
+    "prepublishOnly": "bun build src/dev.ts --target bun --outdir ./dist",
+    "prebuild": "bun clean",
+    "pub": "bun run build && npm publish --registry https://registry.npmjs.org"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@types/chokidar": "^2.1.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/express-xml-bodyparser": "^0.3.5",
@@ -54,6 +57,7 @@
   "dependencies": {
     "axios": "^1.7.7",
     "chalk": "^4.1.2",
+    "chokidar": "^4.0.3",
     "cors": "^2.8.5",
     "database-proxy": "^1.0.0",
     "dotenv": "^16.4.5",
@@ -64,10 +68,5 @@
     "mongodb": "^5.9.2",
     "multer": "1.4.5-lts.1",
     "ws": "^8.18.0"
-  },
-  "packageManager": "pnpm@9.12.3",
-  "engines": {
-    "node": ">=22.9.0",
-    "pnpm": ">=9.12.2"
   }
 }

@@ -1,6 +1,6 @@
-import { SimpleWeb } from './simple'
+import { BunLafServer } from './server'
 
 // 启动服务
 console.log('启动服务')
-const app = new SimpleWeb()
+const app = new BunLafServer()
 app.start()
