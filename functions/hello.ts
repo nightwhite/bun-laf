@@ -1,8 +1,7 @@
-import { cloud } from 'bun-laf'
-import * as jwt from 'jsonwebtoken'
+import { cloud } from '../src/index'
 
 export default async function (ctx: FunctionContext) {
-  console.log(12313123, ctx.user)
+  console.log('UserInfo', ctx.user)
 
   const jwtdata = cloud.getToken({
     user: '1',
@@ -11,7 +10,7 @@ export default async function (ctx: FunctionContext) {
 
   console.log(jwtdata)
 
-  console.log(jwt.verify(jwtdata, '111'))
+  console.log(cloud.parseToken(jwtdata))
 
   const db = cloud.database()
   const res = await db.collection('test').get()
@@ -20,6 +19,9 @@ export default async function (ctx: FunctionContext) {
   const db2 = cloud.mongo.db
   const res2 = await db2.collection('test').find().toArray()
   console.log(222, res2)
+
+  const res3 = await cloud.invoke('__init__')
+  console.log(333, res2)
 
   // const cache = FunctionCache.getAll()
   // console.log(cache)

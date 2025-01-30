@@ -10,7 +10,7 @@ import { DatabaseAgent } from './db/db'
 import { FunctionCache } from './engine/cache/FunctionCache'
 import { router } from './handler/router'
 import { WebSocketAgent } from './handler/ws'
-import type { SimpleWebConfig } from './types/simple-web-config'
+import type { BunLafServerConfig } from './types/server'
 import { GetClientIPFromRequest, parseToken, splitBearerToken } from './utils/common'
 import { systemLogger } from './utils/logger'
 
@@ -20,11 +20,11 @@ declare module 'express' {
   }
 }
 
-export class SimpleWeb {
+export class BunLafServer {
   private app: Express
   private server!: Server
 
-  constructor(private userConfig: SimpleWebConfig = {}) {
+  constructor(private userConfig: BunLafServerConfig = {}) {
     Config.initialize(userConfig)
     this.app = express()
     this.setupMiddlewares()
@@ -73,18 +73,9 @@ export class SimpleWeb {
      * Parsing bearer token
      */
     this.app.use((req: Request, _res: Response, next: NextFunction) => {
-      console.log(req.headers)
-
       const token = splitBearerToken(req.headers['authorization'] ?? '')
-
-      console.log('token1111:', token)
-
       const auth = token ? parseToken(token) : null
-
-      console.log('auth:', auth)
-
       req['user'] = auth
-
       next()
     })
   }
@@ -117,12 +108,12 @@ export class SimpleWeb {
   private exit() {
     this.server.close()
     DatabaseAgent.accessor.close()
-    systemLogger.info('simple web exited!')
+    systemLogger.info('Bun-Laf framework exited!')
     process.exit(0)
   }
 
-  public start() {
-    DatabaseAgent.initialize()
+  public async start() {
+    await DatabaseAgent.initialize()
     FunctionCache.initialize()
 
     this.server = this.app.listen(Config.PORT, () =>
@@ -132,9 +123,8 @@ export class SimpleWeb {
     this.setupWebSocket()
     this.setupErrorHandling()
 
-    systemLogger.info('SimpleWeb framework started.')
+    systemLogger.info('Bun-Laf framework started.')
   }
 }
 
-export default SimpleWeb
-
+export default BunLafServer

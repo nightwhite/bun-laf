@@ -1,4 +1,4 @@
-import { SimpleWeb } from '../src/index'
+import { BunLafServer } from 'bun-laf'
 
-const app = new SimpleWeb()
+const app = new BunLafServer()
 app.start()

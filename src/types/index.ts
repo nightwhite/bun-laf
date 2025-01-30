@@ -1,3 +1,3 @@
 export * from './functions'
-export * from './simple-web-config'
+export * from './server'
 export * from '../cloud'

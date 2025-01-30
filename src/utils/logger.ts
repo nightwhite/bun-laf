@@ -5,7 +5,7 @@ import chalk from 'chalk'
 import lodash from 'lodash'
 
 import Config from '../config/Config.js'
-import type { SimpleWebConfig } from '../types/simple-web-config.js'
+import type { BunLafServerConfig } from '../types/server.js'
 
 const enum LogLevel {
   DEBUG = 'debug',
@@ -20,7 +20,7 @@ type LogLevelValue = {
 
 export class Console {
   protected readonly category: string
-  protected readonly config: SimpleWebConfig
+  protected readonly config: BunLafServerConfig
 
   private static readonly LogLevelValue: LogLevelValue = {
     [LogLevel.DEBUG]: 0,
@@ -29,7 +29,7 @@ export class Console {
     [LogLevel.ERROR]: 3,
   }
 
-  constructor(category: string, config: SimpleWebConfig) {
+  constructor(category: string, config: BunLafServerConfig) {
     this.category = category
     this.config = config
   }
@@ -149,7 +149,7 @@ export class Console {
 export class DebugConsole extends Console {
   private _logs: string[] = []
 
-  constructor(category: string, config: SimpleWebConfig) {
+  constructor(category: string, config: BunLafServerConfig) {
     super(category, config)
   }
 
@@ -167,4 +167,4 @@ export class DebugConsole extends Console {
 /**
  * The global logger instance
  */
-export const systemLogger = new Console('#', Config)
+export const systemLogger = new Console('#', new Config())

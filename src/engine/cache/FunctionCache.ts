@@ -1,11 +1,15 @@
 import fs from 'fs'
 import path from 'path'
 
+import type { FSWatcher } from 'chokidar'
+import chokidar from 'chokidar'
+
 import Config from '../../config/Config'
 import type { IFunctionData } from '../../types/functions'
 import { compileTs2js } from '../../utils/lang'
 import { systemLogger } from '../../utils/logger'
 import { InitHook } from '../hooks/init-hook'
+import { FunctionModule } from '../module/FunctionModule'
 
 /**
  * Manages caching of cloud functions in memory
@@ -14,6 +18,7 @@ import { InitHook } from '../hooks/init-hook'
 export class FunctionCache {
   /** In-memory cache storing function data, indexed by function name */
   private static cache: Map<string, IFunctionData> = new Map()
+  private static watcher: FSWatcher | null = null
 
   /**
    * Initializes the function cache by loading all functions from workspace
@@ -23,6 +28,7 @@ export class FunctionCache {
     systemLogger.info('initialize function cache')
 
     this.initializeFromWorkspace()
+    this.startWatching()
 
     systemLogger.info('Function cache initialized.')
 
@@ -132,6 +138,74 @@ export class FunctionCache {
           FunctionCache.cache.set(cloudFunction.name, cloudFunction)
         }
       }
+    }
+  }
+
+  /**
+   * Starts watching for file changes in the workspace
+   * @private
+   */
+  private static startWatching(): void {
+    // 只在开发模型下监听文件变化
+    if (Config.isProd) return
+    this.watcher = chokidar.watch(Config.WORKSPACE_PATH, {
+      ignored: /(^|[/\\])\../,
+      persistent: true,
+      ignoreInitial: true, // 添加这个选项来忽略初始的 add 事件
+    })
+
+    this.watcher
+      .on('add', (path) => this.handleFileChange('add', path))
+      .on('change', (path) => this.handleFileChange('change', path))
+      .on('unlink', (path) => this.handleFileChange('unlink', path))
+
+    systemLogger.info('Started watching workspace for changes')
+  }
+
+  /**
+   * Handles file changes in the workspace
+   * @private
+   */
+  private static handleFileChange(event: 'add' | 'change' | 'unlink', filepath: string): void {
+    systemLogger.info(`${event} event: ${filepath}`)
+
+    if (filepath.endsWith('.d.ts')) return
+    if (!filepath.endsWith('.ts')) return
+
+    const relativePath = path.relative(Config.WORKSPACE_PATH, filepath)
+    const name = relativePath.replace(/\.ts$/, '')
+
+    if (event === 'unlink') {
+      this.delete(name)
+      // 清理模块缓存
+      FunctionModule.clearCache()
+      systemLogger.info(`Removed function: ${name}`)
+      return
+    }
+
+    // Read and compile the changed file
+    const fileContent = fs.readFileSync(filepath, 'utf8')
+    const compiledCode = compileTs2js(fileContent, name)
+    const cloudFunction: IFunctionData = {
+      name,
+      code: fileContent,
+      compiledCode,
+    }
+
+    this.set(name, cloudFunction)
+    // 清理模块缓存
+    FunctionModule.clearCache()
+    systemLogger.info(`${event === 'add' ? 'Added' : 'Updated'} function: ${name}`)
+  }
+
+  /**
+   * Stops the file watcher
+   */
+  static stopWatching(): void {
+    if (this.watcher) {
+      this.watcher.close()
+      this.watcher = null
+      systemLogger.info('Stopped watching workspace')
     }
   }
 }

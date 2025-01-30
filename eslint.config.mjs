@@ -67,6 +67,13 @@ export default [
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      // 添加 no-var 规则的例外
+      'no-var': [
+        'error',
+        {
+          ignoreGlobalScope: true, // 允许在全局作用域使用 var
+        },
+      ],
     },
   },
   prettier,

@@ -26,6 +26,7 @@ export class DatabaseAgent {
   }
 
   static async initialize() {
+    console.log('DB_URI:', Config.DB_URI)
     if (Config.DB_URI === null) {
       systemLogger.error('DB_URI is not set')
       return

@@ -3,7 +3,7 @@ import path from 'path'
 
 import dotenv from 'dotenv'
 
-import type { SimpleWebConfig } from '../types/simple-web-config'
+import type { BunLafServerConfig } from '../types/server'
 
 dotenv.config()
 
@@ -11,9 +11,9 @@ dotenv.config()
  * config manager
  */
 // export default class Config {
-//   private static config: SimpleWebConfig = {}
+//   private static config: BunLafServerConfig = {}
 
-//   static initialize(userConfig: SimpleWebConfig = {}) {
+//   static initialize(userConfig: BunLafServerConfig = {}) {
 //     this.config = {
 //       port: userConfig.port || Number(process.env.PORT) || 2342,
 //       logLevel:
@@ -71,14 +71,14 @@ dotenv.config()
  * config manager
  */
 export class Config {
-  private static config: SimpleWebConfig = {}
+  private static config: BunLafServerConfig = {}
   private static userProjectRoot: string = process.cwd()
 
   /**
    * Initialize configuration
    * Priority: userConfig > environment variables > default values
    */
-  static initialize(userConfig: SimpleWebConfig = {}) {
+  static initialize(userConfig: BunLafServerConfig = {}) {
     try {
       this.config = {
         port: userConfig.port || Number(process.env.PORT) || 2342,
@@ -99,10 +99,6 @@ export class Config {
           userConfig.disableModuleCache !== undefined
             ? userConfig.disableModuleCache
             : process.env.DISABLE_MODULE_CACHE === 'true',
-        isProd:
-          userConfig.isProd !== undefined
-            ? userConfig.isProd
-            : process.env.NODE_ENV === 'production',
         workspacePath: this.resolveWorkspacePath(userConfig.workspacePath),
       }
 
@@ -210,7 +206,7 @@ export class Config {
   }
 
   static get isProd(): boolean {
-    return this.config.isProd!
+    return process.env.NODE_ENV === 'production'
   }
 
   static get WORKSPACE_PATH(): string {
